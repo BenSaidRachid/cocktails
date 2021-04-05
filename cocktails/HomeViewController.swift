@@ -10,21 +10,42 @@ import UIKit
 class HomeViewController: UIViewController, UITableViewDataSource {
     
     @IBOutlet weak var tableView: UITableView!
-    let array = ["Hello", "word"]
+    private var cocktails: Cocktails?
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         tableView.dataSource = self
         tableView.tableFooterView = UIView()
+        registerTableViewCells()
     }
-
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        Api.shared.listCocktailsByLetter("a") { (cocktails) in
+            if let cocktails = cocktails {
+                self.cocktails = cocktails
+                self.tableView.reloadData()
+            } else {
+                print("Could not fetch cocktails")
+            }
+        }
+    }
+    
+    private func registerTableViewCells() {
+        tableView.register(UINib(nibName: "CustomTableViewCell", bundle: nil), forCellReuseIdentifier: "customCell")
+    }
+    
+    
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return array.count
+        return cocktails?.drinks.count ?? 0
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath)
+        let cocktail = self.cocktails?.drinks[indexPath.row]
         
-        cell.textLabel?.text = array[indexPath.row]
+        cell.textLabel?.text = cocktail?.name
+     
         return cell
     }
     
@@ -33,7 +54,7 @@ class HomeViewController: UIViewController, UITableViewDataSource {
         
         if let index = self.tableView.indexPath(for: cell)?.row {
             if let viewController = segue.destination as? DetailViewController {
-                viewController.text = self.array[index]
+                viewController.cocktail = self.cocktails?.drinks[index]
             }
         }
     }
