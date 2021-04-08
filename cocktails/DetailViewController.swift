@@ -13,7 +13,7 @@ class DetailViewController: UIViewController {
     @IBOutlet weak var glass: UILabel!
     @IBOutlet weak var category: UILabel!
     @IBOutlet weak var instructions: UITextView!
-    @IBOutlet weak var image: UIImageView!
+    @IBOutlet weak var imageView: UIImageView!
     var cocktail: Cocktail?
     
     override func viewWillAppear(_ animated: Bool) {
@@ -23,21 +23,11 @@ class DetailViewController: UIViewController {
             glass.text = cocktail.glass
             category.text = cocktail.category
             instructions.text = cocktail.instructions
-            if let image = cocktail.image {
-                setImageToImageView(imageUrl: image)
+            if let imageUrl = cocktail.image {
+                imageView.fetchImage(from: imageUrl)
+               // imageView.layer.cornerRadius = 20
+               // imageView.layer.masksToBounds = false
             }
         }
-    }
-
-    func setImageToImageView(imageUrl url: String) {
-        fetchImage(from: url, completionHandler: { (imageData) in
-                if let data = imageData {
-                    DispatchQueue.main.async {
-                        self.image.image = UIImage(data: data)
-                    }
-                } else {
-                    print("Error loading image");
-                }
-            })
     }
 }

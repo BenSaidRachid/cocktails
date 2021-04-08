@@ -41,16 +41,17 @@ class HomeViewController: UIViewController, UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath)
-        let cocktail = self.cocktails?.drinks[indexPath.row]
+        let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath) as! ImageTableViewCell
+        let cocktail = self.cocktails!.drinks[indexPath.row]
         
-        cell.textLabel?.text = cocktail?.name
-     
+        cell.name?.text = cocktail.name
+        cell.imgView?.fetchImage(from: cocktail.image)
+        
         return cell
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        guard let cell = sender as? UITableViewCell else { return }
+        guard let cell = sender as? ImageTableViewCell else { return }
         
         if let index = self.tableView.indexPath(for: cell)?.row {
             if let viewController = segue.destination as? DetailViewController {
@@ -60,3 +61,8 @@ class HomeViewController: UIViewController, UITableViewDataSource {
     }
 }
 
+extension HomeViewController: UITableViewDelegate {
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        return 100
+    }
+}
